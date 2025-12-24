@@ -5,9 +5,12 @@ build/
 dist/
 wheels/
 *.egg-info
+*.egg
 
 # Virtual environments
 .venv
+venv/
+env/
 
 # macOS files
 .DS_Store
@@ -17,7 +20,32 @@ data/
 
 # Environment and secrets
 .env
+.env.*
 
 # Test coverage
 .coverage
+.coverage.*
 htmlcov/
+.pytest_cache/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# ruff
+.ruff_cache/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# Logs
+*.log
