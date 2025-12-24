@@ -5,9 +5,9 @@ from typing import Any
 
 from rich.text import Text
 from textual.app import App, ComposeResult
-from textual.containers import Container, Vertical, VerticalScroll
+from textual.containers import Container, Horizontal, Vertical, VerticalScroll
 from textual.reactive import reactive
-from textual.widgets import Footer, Header, Static
+from textual.widgets import Checkbox, Footer, Header, Static
 
 
 class AnnotationGroup:
@@ -53,30 +53,34 @@ class NoteData:
         self.end_offset = start_offset + len(text)
 
 
-class AnnotationItem(Static):
-    """A clickable annotation item showing ICD code and count."""
+class AnnotationItem(Horizontal):
+    """A clickable annotation item with checkbox showing ICD code."""
 
     def __init__(self, group: AnnotationGroup, group_id: int):
+        super().__init__(classes="annotation-item", id=f"annotation-item-{group_id}")
         self.group = group
         self.group_id = group_id
-        self.is_selected = False
 
-        # Format: "S02.0XXB (ICD-10-CM) x3: Fracture of vault of skull..."
+    def compose(self) -> ComposeResult:
+        """Create child widgets."""
+        # Format label: "S02.0XXB (ICD-10-CM): Fracture of vault of skull... (x3)"
         label = (
-            f"[bold cyan]{group.code}[/bold cyan] "
-            f"({group.code_system}) "
-            f"[yellow]x{group.count}[/yellow]: "
-            f"{group.description[:60]}{'...' if len(group.description) > 60 else ''}"
+            f"[bold cyan]{self.group.code}[/bold cyan] "
+            f"({self.group.code_system}): "
+            f"{self.group.description[:50]}{'...' if len(self.group.description) > 50 else ''} "
+            f"[dim]({self.group.count})[/dim]"
         )
 
-        super().__init__(label, classes="annotation-item", id=f"annotation-item-{group_id}")
+        yield Checkbox(label, id=f"checkbox-{self.group_id}")
 
-    def on_click(self):
-        """Handle click events."""
-        self.is_selected = not self.is_selected
+    def on_checkbox_changed(self, event: Checkbox.Changed) -> None:
+        """Handle checkbox state changes."""
         app = self.app
         if isinstance(app, ICD10Viewer):
-            app.toggle_annotation_group(self.group_id)
+            if event.value:
+                app.add_selected_group(self.group_id)
+            else:
+                app.remove_selected_group(self.group_id)
 
 
 class ICD10Viewer(App):
@@ -113,16 +117,12 @@ class ICD10Viewer(App):
 
     .annotation-item {
         height: auto;
-        padding: 0 1;
-        margin: 0 0 1 0;
+        padding: 0;
+        margin: 0 0 0 0;
     }
 
     .annotation-item:hover {
-        background: $primary 20%;
-    }
-
-    .annotation-item-selected {
-        background: $accent;
+        background: $primary 10%;
     }
 
     .note-header {
@@ -249,15 +249,16 @@ class ICD10Viewer(App):
         container.border_title = "Clinical Notes"
         return container
 
-    def toggle_annotation_group(self, group_id: int):
-        """Toggle selection of an annotation group."""
+    def add_selected_group(self, group_id: int):
+        """Add a group to the selection."""
         new_selected = set(self.selected_groups)
+        new_selected.add(group_id)
+        self.selected_groups = new_selected
 
-        if group_id in new_selected:
-            new_selected.remove(group_id)
-        else:
-            new_selected.add(group_id)
-
+    def remove_selected_group(self, group_id: int):
+        """Remove a group from the selection."""
+        new_selected = set(self.selected_groups)
+        new_selected.discard(group_id)
         self.selected_groups = new_selected
 
     def watch_selected_groups(self, new_value: set):
@@ -265,14 +266,11 @@ class ICD10Viewer(App):
         if not self.is_mounted:
             return
 
-        # Update annotation item styling
+        # Update checkbox states
         for idx in range(len(self.sorted_groups)):
             try:
-                item = self.query_one(f"#annotation-item-{idx}", AnnotationItem)
-                if idx in new_value:
-                    item.add_class("annotation-item-selected")
-                else:
-                    item.remove_class("annotation-item-selected")
+                checkbox = self.query_one(f"#checkbox-{idx}", Checkbox)
+                checkbox.value = idx in new_value
             except Exception:
                 pass
 
