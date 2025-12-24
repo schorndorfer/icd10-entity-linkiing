@@ -1,0 +1,27 @@
+{
+  "patient": {
+    "id": "12345",
+    "name": "John Doe",
+    "age": 45,
+    "diagnoses": [
+      {
+        "code": "E11.9",
+        "description": "Type 2 diabetes mellitus without complications",
+        "date": "2024-01-15"
+      },
+      {
+        "code": "I10",
+        "description": "Essential (primary) hypertension",
+        "date": "2024-01-15"
+      }
+    ],
+    "medications": [
+      "Metformin",
+      "Lisinopril"
+    ]
+  },
+  "metadata": {
+    "created": "2024-01-15T10:30:00Z",
+    "version": "1.0"
+  }
+}
