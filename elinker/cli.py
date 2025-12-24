@@ -1,5 +1,6 @@
 """CLI for ICD-10 Entity Linker."""
 
+import asyncio
 import json
 import sys
 from pathlib import Path
@@ -79,6 +80,52 @@ def view_json(
         sys.exit(1)
 
 
+@app.command
+async def view(
+    file_path: Annotated[Path, Parameter(help="Path to ICD-10 annotation JSON file")],
+):
+    """Launch interactive viewer for ICD-10 annotated clinical notes.
+
+    Displays annotations grouped by ICD-10 code with clickable highlighting
+    in the text. Shows all notes in a single scrollable view.
+
+    Args:
+        file_path: Path to the ICD-10 annotation JSON file
+    """
+    try:
+        # Import viewer here to avoid loading textual unless needed
+        from .viewer import ICD10Viewer
+
+        # Validate file
+        if not file_path.exists():
+            console_err.print(f"[red]Error:[/red] File not found: {file_path}")
+            sys.exit(1)
+
+        if not file_path.is_file():
+            console_err.print(f"[red]Error:[/red] Not a file: {file_path}")
+            sys.exit(1)
+
+        # Load JSON data
+        with open(file_path, encoding="utf-8") as f:
+            data = json.load(f)
+
+        # Validate structure
+        if "notes" not in data:
+            console_err.print(f"[red]Error:[/red] Invalid format - missing 'notes' field")
+            sys.exit(1)
+
+        # Launch viewer
+        viewer = ICD10Viewer(data, file_path)
+        await viewer.run_async()
+
+    except json.JSONDecodeError as e:
+        console_err.print(f"[red]Error:[/red] Invalid JSON: {e}")
+        sys.exit(1)
+    except Exception as e:
+        console_err.print(f"[red]Error:[/red] {e}")
+        sys.exit(1)
+
+
 def _format_size(size_bytes: int) -> str:
     """Format file size in human-readable format.
 
@@ -96,4 +143,4 @@ def _format_size(size_bytes: int) -> str:
 
 
 if __name__ == "__main__":
-    app()
+    asyncio.run(app())
