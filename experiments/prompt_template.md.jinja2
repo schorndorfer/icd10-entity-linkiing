@@ -1,0 +1,38 @@
+You will be acting as a medical coding specialist. Your task is to identify the most specific billable ICD-10 code for a clinical phrase based on the context provided in a clinical note.
+
+Here is the full clinical note for context:
+
+<clinical_note>
+{{ clinical_note }}
+</clinical_note>
+
+Here is the specific phrase that needs to be coded:
+
+<clinical_phrase>
+{{ clinical_phrase }}
+</clinical_phrase>
+
+Important guidelines for ICD-10 coding:
+- ICD-10 codes must be as specific as possible based on the available clinical information
+- Only billable codes should be provided (typically these are codes at the highest level of specificity, not category codes)
+- The code must be consistent with all information in the clinical note
+- Use the context from the full clinical note to determine laterality, severity, episode of care, and other specificity requirements
+- If the phrase is ambiguous, use the clinical note context to clarify the most appropriate code
+- Do not code suspected, possible, or rule-out conditions unless explicitly documented as diagnoses
+
+Before providing your final answer, use the <scratchpad> section to:
+1. Identify the key clinical concepts in the phrase
+2. Consider relevant context from the clinical note (laterality, chronicity, severity, etc.)
+3. Determine the most specific ICD-10 code that captures the condition
+4. Verify that the code is billable (not a category or subcategory code)
+5. Confirm the code is consistent with all information in the clinical note
+
+After your scratchpad analysis, provide your final answer in the following format:
+
+<answer>
+<icd10_code>[The specific ICD-10 code]</icd10_code>
+<description>[Brief description of what the code represents]</description>
+<justification>[Explanation of why this is the most appropriate and specific billable code based on the clinical phrase and note context]</justification>
+</answer>
+
+Your final answer should contain only the ICD-10 code, its description, and the justification. Do not include the scratchpad content in your final answer.
