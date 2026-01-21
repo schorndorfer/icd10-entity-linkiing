@@ -27,11 +27,14 @@ classifiers = [
 dependencies = [
     "anthropic>=0.76.0",
     "cyclopts>=4.4.1",
+    "datasets>=4.5.0",
     "dspy>=3.0.4",
     "ipykernel>=7.1.0",
     "ipywidgets>=8.1.8",
     "jinja2>=3.1.6",
     "polars>=1.36.1",
+    "pytest>=9.0.2",
+    "pytest-cov>=4.0",
     "python-dotenv>=1.2.1",
     "requests>=2.32.5",
     "rich>=14.2.0",
@@ -57,12 +60,12 @@ Issues = "https://github.com/yourusername/icd10-entity-linker/issues"
 elinker = "elinker.cli:app"
 
 [tool.setuptools]
-package-dir = { "" = "." }
+package-dir = { "" = "src" }
 
 [tool.setuptools.packages.find]
-where = ["."]
+where = ["src"]
 include = ["elinker*"]
-exclude = ["notebooks*", "data*", "tests*"]
+exclude = []
 
 [tool.ruff]
 line-length = 100
