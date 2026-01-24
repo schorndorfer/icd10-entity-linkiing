@@ -48,10 +48,19 @@ def get_annotation_color(code_system: str) -> tuple:
         return "#E0E0E0", "#333333"  # Gray
 
 
+def escape_for_display(text: str) -> str:
+    """Escape text for HTML display, including markdown-like patterns."""
+    # First escape HTML entities
+    escaped = html.escape(text)
+    # Escape asterisks to prevent markdown bold/italic interpretation
+    escaped = escaped.replace('*', '&#42;')
+    return escaped
+
+
 def create_highlighted_text(text: str, annotations: List[Dict], selected_annotation_idx: int = None) -> str:
     """Create HTML with highlighted annotations."""
     if not annotations:
-        return f"<pre style='white-space: pre-wrap; font-family: monospace; color: #333333;'>{html.escape(text)}</pre>"
+        return f"<pre style='white-space: pre-wrap; font-family: monospace; color: #333333;'>{escape_for_display(text)}</pre>"
 
     # Sort annotations by begin position (reverse for processing from end)
     sorted_annotations = sorted(enumerate(annotations), key=lambda x: x[1]['begin'])
@@ -66,7 +75,7 @@ def create_highlighted_text(text: str, annotations: List[Dict], selected_annotat
 
         # Add text before this annotation
         if begin > last_end:
-            result_parts.append(html.escape(text[last_end:begin]))
+            result_parts.append(escape_for_display(text[last_end:begin]))
 
         # Get colors
         bg_color, text_color = get_annotation_color(ann.get('code_system', ''))
@@ -78,7 +87,7 @@ def create_highlighted_text(text: str, annotations: List[Dict], selected_annotat
         border_style = "border: 3px solid #FF0000; box-shadow: 0 0 10px #FF0000;" if is_selected else ""
         span_id = f"annotation-{orig_idx}"
 
-        highlighted_text = html.escape(text[begin:end])
+        highlighted_text = escape_for_display(text[begin:end])
         result_parts.append(
             f'<span id="{span_id}" style="background-color: {bg_color}; color: {text_color}; '
             f'padding: 2px 4px; border-radius: 3px; {border_style}">'
@@ -89,7 +98,7 @@ def create_highlighted_text(text: str, annotations: List[Dict], selected_annotat
 
     # Add remaining text
     if last_end < len(text):
-        result_parts.append(html.escape(text[last_end:]))
+        result_parts.append(escape_for_display(text[last_end:]))
 
     final_html = ''.join(result_parts)
     return f"<pre style='white-space: pre-wrap; font-family: monospace; line-height: 1.6; color: #333333;'>{final_html}</pre>"
