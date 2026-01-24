@@ -203,6 +203,17 @@ def main():
         # Initialize session state for selected annotation
         if 'selected_annotation' not in st.session_state:
             st.session_state.selected_annotation = None
+        if 'current_file' not in st.session_state:
+            st.session_state.current_file = None
+        if 'current_note_idx' not in st.session_state:
+            st.session_state.current_note_idx = None
+
+        # Reset selection when file or note changes
+        if (st.session_state.current_file != selected_file or
+            st.session_state.current_note_idx != selected_note_idx):
+            st.session_state.selected_annotation = None
+            st.session_state.current_file = selected_file
+            st.session_state.current_note_idx = selected_note_idx
 
         # Main content area with two columns
         col1, col2 = st.columns([2, 1])
