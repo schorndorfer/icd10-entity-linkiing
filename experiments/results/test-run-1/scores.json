@@ -1,0 +1,11 @@
+{
+    "evaluated_examples": 25,
+    "accuracy": 0.72,
+    "micro_f1": 0.72,
+    "macro precision": 0.5625,
+    "micro precision": 0.72,
+    "micro recall": 0.72,
+    "macro recall": 0.5625,
+    "macro_f1": 0.5625,
+    "weighted_f1": 0.72
+}

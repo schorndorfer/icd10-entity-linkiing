@@ -29,18 +29,23 @@ dependencies = [
     "cyclopts>=4.4.1",
     "datasets>=4.5.0",
     "dspy>=3.0.4",
+    "evaluate>=0.4.6",
     "ipykernel>=7.1.0",
     "ipywidgets>=8.1.8",
     "jinja2>=3.1.6",
+    "litellm>=1.80.11",
+    "mlflow>=3",
     "polars>=1.36.1",
     "pytest>=9.0.2",
     "pytest-cov>=4.0",
     "python-dotenv>=1.2.1",
     "requests>=2.32.5",
     "rich>=14.2.0",
+    "scikit-learn>=1.8.0",
     "streamlit>=1.53.1",
     "textual>=0.49.0",
     "textualize>=0.1",
+    "trackio>=0.15.0",
 ]
 
 [project.optional-dependencies]
